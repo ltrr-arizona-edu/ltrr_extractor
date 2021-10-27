@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-'use strict'
+import { globby } from 'globby';
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
 
-const fsPromises = require('fs').promises;
-const path = require('path');
-const globby = require('globby')
-const argv = require('yargs/yargs')(process.argv.slice(2))
+yargs(hideBin(process.argv))
   .default('verbosity', 1, 'logging detail (0 is quiet)')
   .argv;
 
@@ -45,7 +44,7 @@ const logger = ((level) => {
     default:
       return normalLogger;
   }
-})(argv.verbosity);
+})(yargs.verbosity);
 
 const main = async () => {
   logger.message('Running')
