@@ -5,7 +5,21 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
 yargs(hideBin(process.argv))
-  .default('verbosity', 1, 'logging detail (0 is quiet)')
+  .option('source', {
+    alias: 's',
+    describe: 'source path pattern specification' 
+  })
+  .option('regex', {
+    alias: 'r',
+    describe: 'search regular expression'
+  })
+  .option('verbosity', {
+    alias: 'v',
+    describe: 'logging level (0 is quiet)'
+  })
+  .demandOption(['source', 'regex'], 'Please specify a source path pattern and a rearch regular expresion.')
+  .default('verbosity', 1)
+  .help()
   .argv;
 
 const quietLogger = {
