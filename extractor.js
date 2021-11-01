@@ -21,7 +21,7 @@ const { argv } = yargs(hideBin(process.argv))
     alias: 'v',
     describe: 'logging level (0 is quiet)',
   })
-  .demandOption(['source', 'regex'], 'Please specify a source path pattern and a rearch regular expresion.')
+  .demandOption(['source', 'regex'], 'Please specify a source path pattern and a search regular expresion.')
   .default('verbosity', 1)
   .help();
 
