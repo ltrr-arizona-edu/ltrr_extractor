@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
 import { execFile } from 'child_process';
+import util from 'util';
 import { globby } from 'globby';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+
+const aExecFile = util.promisify(execFile);
 
 const { argv } = yargs(hideBin(process.argv))
   .option('source', {
@@ -64,24 +67,18 @@ const logger = ((level) => {
 })(argv.verbosity);
 
 async function processFile(file, exp) {
-  // eslint-disable-next-line no-unused-vars
-  execFile('pdftotext', [file, '-'], { maxBuffer: 67108864 }, (error, stdout, stderr) => {
-    if (error) {
-      logger.errMessage(error);
-    } else {
-      const matched = stdout.matchAll(exp);
-      if (matched) {
-        const matchlist = Array.from(matched, (m) => m[0]).join('\n');
-        logger.message(`${file} . . . .\n${matchlist}`);
-      }
-    }
-  });
+  const { stdout } = await aExecFile('pdftotext', [file, '-'], { maxBuffer: 67108864 });
+  const matched = stdout.matchAll(exp);
+  if (matched) {
+    const matchlist = Array.from(matched, (m) => m[0]).join('\n');
+    logger.message(`${file} . . . .\n${matchlist}`);
+  }
 }
 
 const main = async () => {
   const src = argv.source;
   const exp = new RegExp(argv.regex, 'g');
-  logger.message(`Running with ${src} | ${exp}`);
+  logger.debugMessage(`Running with ${src} | ${exp}`);
   try {
     const pdfs = await globby([src, '!._*']);
     await Promise.all(pdfs.map((file) => processFile(file, exp)));
