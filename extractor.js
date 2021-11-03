@@ -72,6 +72,8 @@ async function processFile(file, exp) {
   if (matched) {
     const matchlist = Array.from(matched, (m) => m[0]).join('\n');
     logger.message(`${file} . . . .\n${matchlist}`);
+  } else {
+    logger.debugMessage(`  (No matches in ${file})`);
   }
 }
 
@@ -81,6 +83,7 @@ const main = async () => {
   logger.debugMessage(`Running with ${src} | ${exp}`);
   try {
     const pdfs = await globby([src, '!._*']);
+    logger.debugMessage('Starting search------------------');
     await Promise.all(pdfs.map((file) => processFile(file, exp)));
   } catch (error) {
     logger.errMessage(error);
